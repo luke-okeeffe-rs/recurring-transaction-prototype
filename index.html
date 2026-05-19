@@ -330,7 +330,9 @@
 
   /* Hidden state for repeats wrapper */
   .repeats-wrap {
-    display: contents;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
   .hidden { display: none !important; }
 
@@ -348,72 +350,100 @@
   }
   .menu-item {
     padding: 12px 16px;
-    font-size: 16px;
-    line-height: 22px;
-    color: var(--text-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     user-select: none;
   }
   .menu-item:hover { background: var(--neutral-lighter); }
-  .menu-item.selected { background: var(--brand-light); color: var(--brand-dark); font-weight: 600; }
-  .menu-item .check { width: 16px; height: 16px; color: var(--brand-dark); }
+  .menu-item.selected { background: transparent; }
+  .menu-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+  .menu-item-title {
+    font-size: 16px;
+    line-height: 22px;
+    color: var(--text-primary);
+    font-weight: 400;
+  }
+  .menu-item-sub {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--text-secondary);
+  }
+  .menu-radio {
+    width: 18px;
+    height: 18px;
+    border: 1.6px solid var(--neutral-medium);
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #fff;
+    position: relative;
+  }
+  .menu-radio.checked {
+    border-color: var(--brand);
+  }
+  .menu-radio.checked::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--brand);
+  }
   .menu-divider { height: 1px; background: var(--neutral-light); margin: 0; }
-  .menu-item.custom { color: var(--brand); font-weight: 600; }
-  .menu-item.custom svg { color: var(--brand); }
+  .menu-item.custom .menu-item-title { color: var(--brand); font-weight: 600; }
 
   /* ==== Inline expansion ==== */
   .inline-expand {
-    margin: -8px 0 0 12px;
-    padding: 12px 0 4px 14px;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 8px;
   }
   .ie-label {
-    font-size: 12px;
-    line-height: 16px;
+    font-size: 13px;
+    line-height: 18px;
     color: var(--text-secondary);
     margin: 0 0 6px;
-    letter-spacing: 0.24px;
     font-weight: 400;
   }
   .inline-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 12px;
     flex-wrap: wrap;
   }
-  .inline-row .word {
-    font-size: 14px;
-    color: var(--text-secondary);
-    white-space: nowrap;
-  }
+  .inline-row .word { display: none; }
   .pill {
-    height: 36px;
+    height: 48px;
     border: 1px solid var(--neutral-medium);
     border-radius: var(--radius-field);
     background: var(--surface);
     display: inline-flex;
     align-items: center;
-    padding: 0 8px 0 10px;
+    padding: 0 12px;
     font-size: 14px;
     color: var(--text-primary);
     cursor: pointer;
-    gap: 4px;
+    gap: 8px;
     min-width: 0;
     font-family: inherit;
     position: relative;
   }
   .pill:hover { border-color: var(--neutral-darker); }
   .pill.open { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
-  .pill .v { font-weight: 600; }
-  .pill .caret { width: 14px; height: 14px; color: var(--neutral-dark); flex-shrink: 0; }
-  .pill.num { width: 60px; justify-content: space-between; }
-  .pill.unit { width: 110px; justify-content: space-between; }
-  .pill.day { flex: 1; min-width: 140px; justify-content: space-between; }
+  .pill .v { font-weight: 400; flex: 1; text-align: left; }
+  .pill .caret { width: 16px; height: 16px; color: var(--neutral-dark); flex-shrink: 0; }
+  .pill.num { flex: 1; justify-content: space-between; }
+  .pill.unit { flex: 1; justify-content: space-between; }
+  .pill.day { flex: 1; justify-content: space-between; }
   .pill.full { width: 100%; justify-content: space-between; }
 
   .pill-menu {
@@ -438,6 +468,7 @@
     cursor: pointer;
     white-space: nowrap;
     user-select: none;
+    text-align: left;
   }
   .pill-menu .pm-item:hover { background: var(--neutral-lighter); }
   .pill-menu .pm-item.selected {
@@ -663,9 +694,8 @@
         <!-- Inline expansion (only visible when Custom selected) -->
         <div class="inline-expand hidden" id="customPanel">
           <div>
-            <div class="ie-label">Repeats</div>
+            <div class="ie-label">Repeats every</div>
             <div class="inline-row">
-              <span class="word">Every</span>
               <button class="pill num" data-pill="number" type="button">
                 <span class="v" id="numLabel">2</span>
                 <svg class="caret" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -681,7 +711,7 @@
             <div class="ie-label" id="dayBlockLabel">On the</div>
             <div class="inline-row">
               <button class="pill day" data-pill="day" type="button">
-                <span class="v" id="dayLabel">15th of the month</span>
+                <span class="v" id="dayLabel">15th</span>
                 <svg class="caret" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
@@ -689,17 +719,9 @@
 
           <div>
             <div class="ie-label">Ends (optional)</div>
-            <button class="pill full" data-pill="ends" type="button">
-              <span class="v" id="endsLabel" style="font-weight: 400; color: var(--neutral-dark);">Never</span>
-              <svg class="caret" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-          </div>
-
-          <div id="endDateRow" class="hidden">
-            <div class="ie-label">Ends on</div>
-            <label class="pill full" style="cursor: pointer;">
-              <input type="date" class="date-native" id="endDate" value="2025-12-01" />
-              <svg class="cal" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <label class="pill full" style="cursor: text;">
+              <input type="text" id="endDate" class="date-native" placeholder="Never" />
+              <svg id="endsCalIcon" class="cal" width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink: 0; cursor: pointer; color: var(--neutral-dark);">
                 <rect x="2.25" y="3.25" width="11.5" height="10.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
                 <path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
               </svg>
@@ -780,8 +802,7 @@
       day: 1,                 // 1..31, or 'last' for last day. Synced from transactionDate.
       weekday: 5,             // 0..6 for weekly mode. Synced from transactionDate.
       startDate: '2026-05-01',
-      ends: 'never',          // 'never' | 'date'
-      endDate: '2027-05-01',
+      endDate: '',
     },
   };
 
@@ -794,21 +815,27 @@
     state.custom.startDate = iso;
     state.custom.day = d.getDate();
     state.custom.weekday = d.getDay();
-    // If the user hasn't customized the end date, keep it a year out from the txn date
-    if (state.custom.ends === 'never') {
-      const e = new Date(d);
-      e.setFullYear(e.getFullYear() + 1);
-      state.custom.endDate = e.toISOString().slice(0, 10);
-    }
   }
 
   const PRESETS = [
-    { key: 'daily',     label: 'Every day',      summary: () => 'Every day' },
-    { key: 'weekly',    label: 'Every week',     summary: () => 'Every week on ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()] },
-    { key: 'biweekly',  label: 'Every 2 weeks',  summary: () => 'Every 2 weeks on ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()] },
-    { key: 'monthly',   label: 'Every month',    summary: () => 'Every month on the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()) },
-    { key: 'quarterly', label: 'Every 3 months', summary: () => 'Every 3 months on the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()) },
-    { key: 'yearly',    label: 'Every year',     summary: () => 'Every year on ' + monthDay(state.custom.startDate) },
+    { key: 'daily',     label: 'Daily',
+      subtitle: () => '',
+      summary: () => 'Every day' },
+    { key: 'weekly',    label: 'Weekly',
+      subtitle: () => 'On ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()],
+      summary: () => 'Every week on ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()] },
+    { key: 'biweekly',  label: 'Every 2 weeks',
+      subtitle: () => 'On ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()],
+      summary: () => 'Every 2 weeks on ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()] },
+    { key: 'monthly',   label: 'Monthly',
+      subtitle: () => 'On the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()),
+      summary: () => 'Every month on the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()) },
+    { key: 'quarterly', label: 'Quarterly',
+      subtitle: () => 'On the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()),
+      summary: () => 'Every 3 months on the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()) },
+    { key: 'yearly',    label: 'Yearly',
+      subtitle: () => 'On ' + monthDay(state.custom.startDate),
+      summary: () => 'Every year on ' + monthDay(state.custom.startDate) },
   ];
 
   const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -844,7 +871,7 @@
       head = 'Every ' + (c.number === 1 ? 'year' : c.number + ' years') +
              ' on ' + monthDay(c.startDate);
     }
-    if (c.ends === 'date' && c.endDate) {
+    if (c.endDate) {
       head += ' until ' + fmtDateLong(c.endDate);
     }
     return head;
@@ -872,8 +899,6 @@
   const $dayBlock = document.getElementById('dayBlock');
   const $dayBlockLabel = document.getElementById('dayBlockLabel');
   const $dayLabel = document.getElementById('dayLabel');
-  const $endsLabel = document.getElementById('endsLabel');
-  const $endDateRow = document.getElementById('endDateRow');
   const $endDate = document.getElementById('endDate');
   const $txnDate = document.getElementById('txnDate');
 
@@ -928,22 +953,20 @@
     } else if (state.custom.unit === 'months') {
       $dayBlock.classList.remove('hidden');
       $dayBlockLabel.textContent = 'On the';
-      $dayLabel.textContent = ordinal(state.custom.day) + (state.custom.day === 'last' ? ' of the month' : ' of the month');
+      $dayLabel.textContent = state.custom.day === 'last' ? 'Last day' : ordinal(state.custom.day);
     } else if (state.custom.unit === 'years') {
       $dayBlock.classList.add('hidden');
     }
 
-    // Ends label and end-date visibility
-    if (state.custom.ends === 'never') {
-      $endsLabel.textContent = 'Never';
-      $endsLabel.style.color = 'var(--neutral-dark)';
-      $endsLabel.style.fontWeight = '400';
-      $endDateRow.classList.add('hidden');
-    } else {
-      $endsLabel.textContent = 'On a date';
-      $endsLabel.style.color = 'var(--text-primary)';
-      $endsLabel.style.fontWeight = '600';
-      $endDateRow.classList.remove('hidden');
+    // Ends field — only update when not focused to avoid disrupting user input
+    if (document.activeElement !== $endDate) {
+      if (state.custom.endDate) {
+        $endDate.type = 'date';
+        $endDate.value = state.custom.endDate;
+      } else {
+        $endDate.type = 'text';
+        $endDate.value = '';
+      }
     }
 
     // Update menu (selection state)
@@ -961,14 +984,18 @@
   function renderMenu() {
     $presetMenu.innerHTML = '';
     PRESETS.forEach(p => {
+      const isSelected = state.mode === 'preset' && state.preset === p.key;
       const item = document.createElement('div');
-      item.className = 'menu-item' + (state.mode === 'preset' && state.preset === p.key ? ' selected' : '');
+      item.className = 'menu-item' + (isSelected ? ' selected' : '');
       item.setAttribute('role', 'option');
       item.dataset.key = p.key;
-      item.innerHTML = `<span>${p.label}</span>` +
-        (state.mode === 'preset' && state.preset === p.key
-          ? '<svg class="check" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-          : '');
+      const sub = p.subtitle();
+      item.innerHTML = `
+        <div class="menu-item-text">
+          <span class="menu-item-title">${p.label}</span>
+          ${sub ? `<span class="menu-item-sub">${sub}</span>` : ''}
+        </div>
+        <span class="menu-radio${isSelected ? ' checked' : ''}"></span>`;
       item.addEventListener('click', () => {
         state.mode = 'preset';
         state.preset = p.key;
@@ -977,28 +1004,57 @@
       });
       $presetMenu.appendChild(item);
     });
+
     const divider = document.createElement('div');
     divider.className = 'menu-divider';
     $presetMenu.appendChild(divider);
-    const customItem = document.createElement('div');
-    customItem.className = 'menu-item custom' + (state.mode === 'custom' ? ' selected' : '');
-    customItem.innerHTML = `
-      <span style="display: inline-flex; align-items: center; gap: 8px;">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/>
-          <path d="M7 4v6M4 7h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-        </svg>
-        Custom…
-      </span>` +
-      (state.mode === 'custom'
-        ? '<svg class="check" viewBox="0 0 16 16" fill="none" style="color: var(--brand-dark);"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-        : '');
-    customItem.addEventListener('click', () => {
-      state.mode = 'custom';
-      closeMenu();
-      render();
-    });
-    $presetMenu.appendChild(customItem);
+
+    if (state.mode === 'custom') {
+      const c = state.custom;
+      let freqLabel = '';
+      if (c.unit === 'weeks') {
+        freqLabel = 'Every ' + (c.number === 1 ? 'week' : c.number + ' weeks') + ' on ' + WEEKDAYS[c.weekday];
+      } else if (c.unit === 'days') {
+        freqLabel = c.number === 1 ? 'Every day' : 'Every ' + c.number + ' days';
+      } else if (c.unit === 'months') {
+        freqLabel = 'Every ' + (c.number === 1 ? 'month' : c.number + ' months') + ' on the ' + ordinal(c.day);
+      } else if (c.unit === 'years') {
+        freqLabel = 'Every ' + (c.number === 1 ? 'year' : c.number + ' years') + ' on ' + monthDay(c.startDate);
+      }
+      const endSub = c.endDate ? 'Until ' + fmtDateLong(c.endDate) : '';
+      const customItem = document.createElement('div');
+      customItem.className = 'menu-item custom selected';
+      customItem.innerHTML = `
+        <div class="menu-item-text">
+          <span class="menu-item-title" style="display:inline-flex;align-items:center;gap:6px;">
+            ${freqLabel}
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="color:var(--brand);flex-shrink:0;">
+              <path d="M11.2 2.4l2.4 2.4-8 8H3.2v-2.4l8-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M9.6 4l2.4 2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </span>
+          ${endSub ? `<span class="menu-item-sub">${endSub}</span>` : ''}
+        </div>
+        <span class="menu-radio checked"></span>`;
+      customItem.addEventListener('click', () => { closeMenu(); });
+      $presetMenu.appendChild(customItem);
+    } else {
+      const customItem = document.createElement('div');
+      customItem.className = 'menu-item custom';
+      customItem.innerHTML = `
+        <div class="menu-item-text">
+          <span class="menu-item-title">Custom frequency</span>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:var(--neutral-dark);flex-shrink:0;">
+          <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      customItem.addEventListener('click', () => {
+        state.mode = 'custom';
+        closeMenu();
+        render();
+      });
+      $presetMenu.appendChild(customItem);
+    }
   }
 
   function openMenu() {
@@ -1063,8 +1119,8 @@
   function dayOptions() {
     if (state.custom.unit === 'months') {
       const arr = [];
-      for (let i = 1; i <= 31; i++) arr.push({ v: i, label: ordinal(i) + ' of the month' });
-      arr.push({ v: 'last', label: 'last day of the month' });
+      for (let i = 1; i <= 31; i++) arr.push({ v: i, label: ordinal(i) });
+      arr.push({ v: 'last', label: 'Last day' });
       return arr;
     }
     if (state.custom.unit === 'weeks') {
@@ -1129,8 +1185,6 @@
           else state.custom.day = v;
           render();
         });
-      } else if (kind === 'ends') {
-        openPillMenu(p, endsOptions(), state.custom.ends, v => { state.custom.ends = v; render(); });
       }
     });
   });
@@ -1139,11 +1193,30 @@
   $txnDate.addEventListener('change', () => {
     state.transactionDate = $txnDate.value;
     syncFromTransactionDate();
-    // Reflect the new end-date default into the input element when applicable
-    if (state.custom.ends === 'never') $endDate.value = state.custom.endDate;
     render();
   });
-  $endDate.addEventListener('change', () => { state.custom.endDate = $endDate.value; render(); });
+
+  $endDate.addEventListener('focus', function() {
+    const val = state.custom.endDate;
+    this.type = 'date';
+    if (val) this.value = val;
+  });
+  $endDate.addEventListener('change', function() {
+    state.custom.endDate = this.value;
+    render();
+  });
+  $endDate.addEventListener('blur', function() {
+    if (!this.value) {
+      this.type = 'text';
+      state.custom.endDate = '';
+      render();
+    }
+  });
+
+  document.getElementById('endsCalIcon').addEventListener('click', function() {
+    $endDate.focus();
+    if ($endDate.showPicker) $endDate.showPicker();
+  });
 
   // Initial sync + render
   syncFromTransactionDate();
