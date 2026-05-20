@@ -350,54 +350,21 @@
   }
   .menu-item {
     padding: 12px 16px;
+    font-size: 16px;
+    line-height: 22px;
+    color: var(--text-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
     user-select: none;
   }
   .menu-item:hover { background: var(--neutral-lighter); }
-  .menu-item.selected { background: transparent; }
-  .menu-item-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-  }
-  .menu-item-title {
-    font-size: 16px;
-    line-height: 22px;
-    color: var(--text-primary);
-    font-weight: 400;
-  }
-  .menu-item-sub {
-    font-size: 13px;
-    line-height: 18px;
-    color: var(--text-secondary);
-  }
-  .menu-radio {
-    width: 18px;
-    height: 18px;
-    border: 1.6px solid var(--neutral-medium);
-    border-radius: 50%;
-    flex-shrink: 0;
-    background: #fff;
-    position: relative;
-  }
-  .menu-radio.checked {
-    border-color: var(--brand);
-  }
-  .menu-radio.checked::after {
-    content: '';
-    position: absolute;
-    inset: 3px;
-    border-radius: 50%;
-    background: var(--brand);
-  }
+  .menu-item.selected { background: var(--brand-light); color: var(--brand-dark); font-weight: 600; }
+  .menu-item .check { width: 16px; height: 16px; color: var(--brand-dark); }
   .menu-divider { height: 1px; background: var(--neutral-light); margin: 0; }
-  .menu-item.custom .menu-item-title { color: var(--brand); font-weight: 600; }
+  .menu-item.custom { color: var(--brand); font-weight: 600; }
+  .menu-item.custom svg { color: var(--brand); }
 
   /* ==== Inline expansion ==== */
   .inline-expand {
@@ -701,7 +668,7 @@
                 <svg class="caret" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <button class="pill unit" data-pill="unit" type="button">
-                <span class="v" id="unitLabel">months</span>
+                <span class="v" id="unitLabel">Months</span>
                 <svg class="caret" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
@@ -818,24 +785,12 @@
   }
 
   const PRESETS = [
-    { key: 'daily',     label: 'Daily',
-      subtitle: () => '',
-      summary: () => 'Every day' },
-    { key: 'weekly',    label: 'Weekly',
-      subtitle: () => 'On ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()],
-      summary: () => 'Every week on ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()] },
-    { key: 'biweekly',  label: 'Every 2 weeks',
-      subtitle: () => 'On ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()],
-      summary: () => 'Every 2 weeks on ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()] },
-    { key: 'monthly',   label: 'Monthly',
-      subtitle: () => 'On the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()),
-      summary: () => 'Every month on the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()) },
-    { key: 'quarterly', label: 'Quarterly',
-      subtitle: () => 'On the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()),
-      summary: () => 'Every 3 months on the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()) },
-    { key: 'yearly',    label: 'Yearly',
-      subtitle: () => 'On ' + monthDay(state.custom.startDate),
-      summary: () => 'Every year on ' + monthDay(state.custom.startDate) },
+    { key: 'daily',     label: 'Every day',      summary: () => 'Every day' },
+    { key: 'weekly',    label: 'Every week',     summary: () => 'Every week on ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()] },
+    { key: 'biweekly',  label: 'Every 2 weeks',  summary: () => 'Every 2 weeks on ' + WEEKDAYS[new Date(state.custom.startDate + 'T00:00').getDay()] },
+    { key: 'monthly',   label: 'Every month',    summary: () => 'Every month on the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()) },
+    { key: 'quarterly', label: 'Every 3 months', summary: () => 'Every 3 months on the ' + ordinal(new Date(state.custom.startDate + 'T00:00').getDate()) },
+    { key: 'yearly',    label: 'Every year',     summary: () => 'Every year on ' + monthDay(state.custom.startDate) },
   ];
 
   const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -941,7 +896,7 @@
 
     // Pill labels
     $numLabel.textContent = state.custom.number;
-    $unitLabel.textContent = state.custom.unit;
+    $unitLabel.textContent = state.custom.unit.charAt(0).toUpperCase() + state.custom.unit.slice(1);
 
     // Day block content depends on unit
     if (state.custom.unit === 'days') {
@@ -989,13 +944,10 @@
       item.className = 'menu-item' + (isSelected ? ' selected' : '');
       item.setAttribute('role', 'option');
       item.dataset.key = p.key;
-      const sub = p.subtitle();
-      item.innerHTML = `
-        <div class="menu-item-text">
-          <span class="menu-item-title">${p.label}</span>
-          ${sub ? `<span class="menu-item-sub">${sub}</span>` : ''}
-        </div>
-        <span class="menu-radio${isSelected ? ' checked' : ''}"></span>`;
+      item.innerHTML = `<span>${p.label}</span>` +
+        (isSelected
+          ? '<svg class="check" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+          : '');
       item.addEventListener('click', () => {
         state.mode = 'preset';
         state.preset = p.key;
@@ -1009,52 +961,18 @@
     divider.className = 'menu-divider';
     $presetMenu.appendChild(divider);
 
-    if (state.mode === 'custom') {
-      const c = state.custom;
-      let freqLabel = '';
-      if (c.unit === 'weeks') {
-        freqLabel = 'Every ' + (c.number === 1 ? 'week' : c.number + ' weeks') + ' on ' + WEEKDAYS[c.weekday];
-      } else if (c.unit === 'days') {
-        freqLabel = c.number === 1 ? 'Every day' : 'Every ' + c.number + ' days';
-      } else if (c.unit === 'months') {
-        freqLabel = 'Every ' + (c.number === 1 ? 'month' : c.number + ' months') + ' on the ' + ordinal(c.day);
-      } else if (c.unit === 'years') {
-        freqLabel = 'Every ' + (c.number === 1 ? 'year' : c.number + ' years') + ' on ' + monthDay(c.startDate);
-      }
-      const endSub = c.endDate ? 'Until ' + fmtDateLong(c.endDate) : '';
-      const customItem = document.createElement('div');
-      customItem.className = 'menu-item custom selected';
-      customItem.innerHTML = `
-        <div class="menu-item-text">
-          <span class="menu-item-title" style="display:inline-flex;align-items:center;gap:6px;">
-            ${freqLabel}
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="color:var(--brand);flex-shrink:0;">
-              <path d="M11.2 2.4l2.4 2.4-8 8H3.2v-2.4l8-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-              <path d="M9.6 4l2.4 2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-            </svg>
-          </span>
-          ${endSub ? `<span class="menu-item-sub">${endSub}</span>` : ''}
-        </div>
-        <span class="menu-radio checked"></span>`;
-      customItem.addEventListener('click', () => { closeMenu(); });
-      $presetMenu.appendChild(customItem);
-    } else {
-      const customItem = document.createElement('div');
-      customItem.className = 'menu-item custom';
-      customItem.innerHTML = `
-        <div class="menu-item-text">
-          <span class="menu-item-title">Custom frequency</span>
-        </div>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:var(--neutral-dark);flex-shrink:0;">
-          <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>`;
-      customItem.addEventListener('click', () => {
-        state.mode = 'custom';
-        closeMenu();
-        render();
-      });
-      $presetMenu.appendChild(customItem);
-    }
+    const customItem = document.createElement('div');
+    customItem.className = 'menu-item custom' + (state.mode === 'custom' ? ' selected' : '');
+    customItem.innerHTML = `<span>Custom frequency</span>` +
+      (state.mode === 'custom'
+        ? '<svg class="check" viewBox="0 0 16 16" fill="none" style="color:var(--brand-dark);"><path d="M3 8l3.5 3.5L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:var(--neutral-dark);flex-shrink:0;"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    customItem.addEventListener('click', () => {
+      state.mode = 'custom';
+      closeMenu();
+      render();
+    });
+    $presetMenu.appendChild(customItem);
   }
 
   function openMenu() {
@@ -1105,10 +1023,10 @@
   // ============== Pill menus ==============
   function unitOptions() {
     return [
-      { v: 'days', label: 'days' },
-      { v: 'weeks', label: 'weeks' },
-      { v: 'months', label: 'months' },
-      { v: 'years', label: 'years' },
+      { v: 'days', label: 'Days' },
+      { v: 'weeks', label: 'Weeks' },
+      { v: 'months', label: 'Months' },
+      { v: 'years', label: 'Years' },
     ];
   }
   function numberOptions() {
