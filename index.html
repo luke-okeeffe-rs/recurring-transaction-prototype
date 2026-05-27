@@ -720,7 +720,7 @@
     </div>
 
     <!-- Right column -->
-    <div class="upload-col">
+    <div class="upload-col" id="uploadCol">
       <div class="upload">
         <div class="icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -731,16 +731,6 @@
         <p class="meta">Supported file types: PDF</p>
       </div>
 
-      <div class="pro-tip">
-        <span class="dismiss">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-        </span>
-        <h4>Pro Tip</h4>
-        <p>Try the new Repeats picker. Choose a preset or pick Custom… to expand the inline scheduling controls.</p>
-        <a href="#">Learn more</a>
-      </div>
     </div>
   </div>
 
@@ -872,6 +862,8 @@
     } else {
       document.getElementById('repeatsWrap').classList.add('hidden');
     }
+    // Upload column visibility
+    document.getElementById('uploadCol').classList.toggle('hidden', state.isRecurring);
     // Toggle visual
     $toggle.classList.toggle('off', !state.isRecurring);
     $toggle.setAttribute('aria-pressed', state.isRecurring ? 'true' : 'false');
